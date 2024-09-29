@@ -16,6 +16,7 @@ import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.ShipForcesInducer;
 import org.valkyrienskies.core.api.ships.properties.ShipTransform;
 import org.valkyrienskies.core.impl.game.ships.PhysShipImpl;
+import org.valkyrienskies.core.impl.shadow.Gh;
 import org.valkyrienskies.physics_api.PoseVel;
 
 import java.util.Arrays;
@@ -97,7 +98,7 @@ public class SimpleWheelController implements ShipForcesInducer {
             }
         });
 
-        if (netLinearForce.isFinite() && netLinearForce.length()/((PhysShipImpl) physShip).getInertia().getShipMass() < MAXIMUM_G) {
+        if (netLinearForce.isFinite() && netLinearForce.length()/((PhysShipImpl) physShip).get_inertia().getMass() < MAXIMUM_G) {
             physShip.applyInvariantForce(netLinearForce);
             if (netTorque.isFinite()) physShip.applyInvariantTorque(netTorque);
         }
@@ -109,9 +110,9 @@ public class SimpleWheelController implements ShipForcesInducer {
     }
 
     private Pair<Vector3dc, Vector3dc> computeForce(SimpleWheelData data, PhysShipImpl ship, double coefficientOfPower, @NotNull Function1<? super Long, ? extends PhysShip> lookupPhysShip) {
-        PoseVel pose = ship.getPoseVel();
+        Gh pose = ship.getPoseVel();
         ShipTransform shipTransform = ship.getTransform();
-        double m =  ship.getInertia().getShipMass();
+        double m =  ship.get_inertia().getMass();
         double gravity_factor = Math.max(0, shipTransform.getShipToWorldRotation().transform(UP, new Vector3d()).dot(UP));
         Vector3dc trackRelPosShip = data.wheelOriginPosition.sub(shipTransform.getPositionInShip(), new Vector3d());
 //            Vector3dc worldSpaceTrackOrigin = shipTransform.getShipToWorld().transformPosition(data.trackOriginPosition.get(new Vector3d()));
@@ -167,8 +168,8 @@ public class SimpleWheelController implements ShipForcesInducer {
         return new Pair<>(tForce, torque);
     }
 
-    public static Vector3dc accumulatedVelocity(ShipTransform t, PoseVel pose, Vector3dc worldPosition) {
-        return pose.getVel().add(pose.getOmega().cross(worldPosition.sub(t.getPositionInWorld(), new Vector3d()), new Vector3d()), new Vector3d());
+    public static Vector3dc accumulatedVelocity(ShipTransform t, Gh pose, Vector3dc worldPosition) {
+        return pose.d.add(pose.e.cross(worldPosition.sub(t.getPositionInWorld(), new Vector3d()), new Vector3d()), new Vector3d());
     }
 
     public final void addTrackBlock(BlockPos pos, SimpleWheelData.SimpleWheelCreateData data) {

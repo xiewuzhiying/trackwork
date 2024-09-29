@@ -15,6 +15,7 @@ import org.valkyrienskies.core.api.ships.ServerShip;
 import org.valkyrienskies.core.api.ships.ShipForcesInducer;
 import org.valkyrienskies.core.api.ships.properties.ShipTransform;
 import org.valkyrienskies.core.impl.game.ships.PhysShipImpl;
+import org.valkyrienskies.core.impl.shadow.Gh;
 import org.valkyrienskies.physics_api.PoseVel;
 
 import java.util.Arrays;
@@ -102,9 +103,9 @@ public class PhysicsTrackController implements ShipForcesInducer {
     }
 
     private Pair<Vector3dc, Vector3dc> computeForce(PhysTrackData data, PhysShipImpl ship, double coefficientOfPower, @NotNull Function1<? super Long, ? extends PhysShip> lookupPhysShip) {
-        PoseVel pose = ship.getPoseVel();
+        Gh pose = ship.getPoseVel();
         ShipTransform shipTransform = ship.getTransform();
-        double m =  ship.getInertia().getShipMass();
+        double m =  ship.get_inertia().getMass();
         Vector3dc trackRelPosShip = data.trackOriginPosition.sub(shipTransform.getPositionInShip(), new Vector3d());
 //            Vector3dc worldSpaceTrackOrigin = shipTransform.getShipToWorld().transformPosition(data.trackOriginPosition.get(new Vector3d()));
         Vector3dc tForce = new Vector3d(); //data.trackSpeed;
@@ -146,8 +147,8 @@ public class PhysicsTrackController implements ShipForcesInducer {
         return new Pair<>(tForce, torque);
     }
 
-    private static Vector3dc accumulatedVelocity(ShipTransform t, PoseVel pose, Vector3dc worldPosition) {
-        return pose.getVel().add(pose.getOmega().cross(worldPosition.sub(t.getPositionInWorld(), new Vector3d()), new Vector3d()), new Vector3d());
+    private static Vector3dc accumulatedVelocity(ShipTransform t, Gh pose, Vector3dc worldPosition) {
+        return pose.d.add(pose.e.cross(worldPosition.sub(t.getPositionInWorld(), new Vector3d()), new Vector3d()), new Vector3d());
     }
 
     public final int addTrackBlock(PhysTrackData.PhysTrackCreateData data) {

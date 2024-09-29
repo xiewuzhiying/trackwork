@@ -96,7 +96,7 @@ public class PhysEntityTrackController implements ShipForcesInducer {
 
     private Pair<@NotNull Vector3dc, @NotNull Vector3dc> computeForce(PhysEntityTrackData data, PhysShipImpl ship, PhysShipImpl wheel, double coefficientOfPower) {
         if (wheel != null) {
-            double m = ship.getInertia().getShipMass();
+            double m = ship.get_inertia().getMass();
             ShipTransform shipTransform = ship.getTransform();
 //            Vector3dc trackPos = shipTransform.getShipToWorld().transformPosition(data.trackPos, new Vector3d());
 //            Vector3dc springVec = wheel.getTransform().getPositionInWorld().sub(trackPos, new Vector3d());
@@ -108,7 +108,7 @@ public class PhysEntityTrackController implements ShipForcesInducer {
 //            data.previousSpringDist = springDist;
 
             Vector3dc wheelAxis = shipTransform.getShipToWorldRotation().transform(data.wheelAxis, new Vector3d());
-            double wheelSpeed = wheel.getPoseVel().getOmega().dot(wheelAxis);
+            double wheelSpeed = wheel.getPoseVel().e.dot(wheelAxis);
             double slip = Math.clamp(-3, 3, -data.trackRPM - wheelSpeed);
             Vector3dc driveTorque = wheelAxis.mul(-slip * m * 0.4 * coefficientOfPower, new Vector3d());
             return new Pair<>(new Vector3d(0), driveTorque);
